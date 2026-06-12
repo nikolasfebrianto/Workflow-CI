@@ -42,6 +42,23 @@ jobs:
         run: |
           mlflow run MLProject --env-manager=local --experiment-name "Breast_Cancer_CI_MLProject"
 
+      - name: Inspect saved MLflow model environment
+        run: |
+          echo "=== MLProject/conda.yaml ==="
+          cat MLProject/conda.yaml || true
+
+          echo "=== MLProject/outputs/model/MLmodel ==="
+          cat MLProject/outputs/model/MLmodel || true
+
+          echo "=== MLProject/outputs/model/conda.yaml ==="
+          cat MLProject/outputs/model/conda.yaml || true
+
+          echo "=== MLProject/outputs/model/python_env.yaml ==="
+          cat MLProject/outputs/model/python_env.yaml || true
+
+          echo "=== Current Python ==="
+          python --version
+
       - name: Upload MLflow output artifacts
         uses: actions/upload-artifact@v5
         with:
@@ -70,7 +87,8 @@ jobs:
           mlflow models build-docker \
             -m MLProject/outputs/model \
             -n "$DOCKER_IMAGE_NAME" \
-            --enable-mlserver
+            --enable-mlserver \
+            --env-manager=local
 
       - name: Login to Docker Hub
         if: github.event_name != 'pull_request'
