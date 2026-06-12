@@ -1,0 +1,14 @@
+name: breast-cancer-mlflow-project
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - mlflow==2.16.2
+      - dagshub==0.3.38
+      - numpy==1.26.4
+      - pandas==2.2.2
+      - scikit-learn==1.5.1
+      - matplotlib==3.9.2
+      - joblib==1.4.2

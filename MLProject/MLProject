@@ -1,0 +1,21 @@
+name: BreastCancerMLflowProject
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      data_dir: {type: path, default: breast_cancer_preprocessing}
+      artifact_dir: {type: str, default: outputs/artifacts}
+      model_output: {type: str, default: outputs/model}
+      n_estimators: {type: int, default: 350}
+      max_depth: {type: int, default: 10}
+    command: >-
+      python modelling.py
+      --data-dir {data_dir}
+      --artifact-dir {artifact_dir}
+      --model-output {model_output}
+      --n-estimators {n_estimators}
+      --max-depth {max_depth}
+      --experiment-name Breast_Cancer_CI_MLProject
+      --run-name github_actions_mlflow_project
