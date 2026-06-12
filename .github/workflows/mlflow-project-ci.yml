@@ -13,10 +13,14 @@ on:
 jobs:
   train-build-push:
     runs-on: ubuntu-latest
+
     env:
       DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
       DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
       DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_IMAGE_NAME }}
 
     steps:
@@ -43,11 +47,29 @@ jobs:
           name: mlflow-project-outputs
           path: MLProject/outputs/
 
+      - name: Validate Docker image name
+        run: |
+          if [ -z "$DOCKER_IMAGE_NAME" ]; then
+            echo "DOCKER_IMAGE_NAME is empty"
+            exit 1
+          fi
+
+          if [[ "$DOCKER_IMAGE_NAME" == /* ]]; then
+            echo "Invalid Docker image name: $DOCKER_IMAGE_NAME"
+            echo "Docker image name must not start with /"
+            exit 1
+          fi
+
+          echo "Using Docker image: $DOCKER_IMAGE_NAME"
+
       - name: Build Docker image using mlflow models build-docker
         run: |
-          IMAGE_NAME="${DOCKER_IMAGE_NAME:-${{ secrets.DOCKERHUB_USERNAME }}/breast-cancer-mlflow:latest}"
-          echo "Building $IMAGE_NAME"
-          mlflow models build-docker             -m MLProject/outputs/model             -n "$IMAGE_NAME"             --enable-mlserver
+          echo "Building $DOCKER_IMAGE_NAME"
+
+          mlflow models build-docker \
+            -m MLProject/outputs/model \
+            -n "$DOCKER_IMAGE_NAME" \
+            --enable-mlserver
 
       - name: Login to Docker Hub
         if: github.event_name != 'pull_request'
@@ -59,5 +81,5 @@ jobs:
       - name: Push Docker image to Docker Hub
         if: github.event_name != 'pull_request'
         run: |
-          IMAGE_NAME="${DOCKER_IMAGE_NAME:-${{ secrets.DOCKERHUB_USERNAME }}/breast-cancer-mlflow:latest}"
-          docker push "$IMAGE_NAME"
+          echo "Pushing $DOCKER_IMAGE_NAME"
+          docker push "$DOCKER_IMAGE_NAME"
