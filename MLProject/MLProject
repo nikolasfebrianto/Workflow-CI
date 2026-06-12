@@ -5,9 +5,9 @@ conda_env: conda.yaml
 entry_points:
   main:
     parameters:
-      data_dir: {type: path, default: breast_cancer_preprocessing}
-      artifact_dir: {type: str, default: outputs/artifacts}
-      model_output: {type: str, default: outputs/model}
+      data_dir: {type: path, default: "MLProject/breast_cancer_preprocessing"}
+      artifact_dir: {type: str, default: "MLProject/outputs/artifacts"}
+      model_output: {type: str, default: "MLProject/outputs/model"}
       n_estimators: {type: int, default: 350}
       max_depth: {type: int, default: 10}
     command: >-
