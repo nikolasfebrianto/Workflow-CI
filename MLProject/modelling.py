@@ -192,6 +192,8 @@ def train(args) -> dict:
     artifact_dir = Path(args.artifact_dir)
     artifact_paths = save_artifacts(model, X_test, y_test, artifact_dir)
 
+    os.environ.pop("MLFLOW_RUN_ID", None)
+
     with mlflow.start_run(run_name=args.run_name) as run:
         mlflow.log_params(params)
         mlflow.log_metrics(metrics)
